@@ -14,9 +14,9 @@
 
 namespace vtpl::common {
 constexpr int MB_10 = 10 * 1024 * 1024;
-FrameUtil::FrameUtil(/* args */) {}
+FrameStatUtil::FrameStatUtil(/* args */) {}
 
-FrameUtil::~FrameUtil() {}
+FrameStatUtil::~FrameStatUtil() {}
 
 void writeStartEnd(const std::chrono::time_point<std::chrono::system_clock>& start,
                    const std::chrono::time_point<std::chrono::system_clock>& end, const std::string& file_name) {

@@ -12,7 +12,16 @@
 
 namespace vtpl::common {
 
-class framestatutil_EXPORT FrameUtil {
+class FRAMESTATUTIL_EXPORT StreamStat {
+
+private:
+  float_t fps;
+  float_t kbps;
+  int64_t frame_gap;
+  int64_t discontinuity;
+};
+
+class FRAMESTATUTIL_EXPORT FrameStatUtil {
 private:
   int64_t total_frames_;
   int64_t last_write_ts_{0};
@@ -21,8 +30,8 @@ private:
   float   last_fps_{0.0};
 
 public:
-  FrameUtil(/* args */);
-  ~FrameUtil();
+  FrameStatUtil(/* args */);
+  ~FrameStatUtil();
 };
 
 } // namespace vtpl::common
