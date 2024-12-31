@@ -2,6 +2,6 @@
   "name": "framestatutil",
   "version": "0.0.1",
   "description": "Frame parse util",
-  "homepage": "http://github.com/framestatutil",
+  "homepage": "http://github.com/vtpl1/framestatutil",
   "dependencies": ["spdlog", "fmt"]
 }
