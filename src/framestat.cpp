@@ -32,53 +32,49 @@ double median(std::vector<int64_t>& v) {
   return (double)(v[(n - 1) / 2] + v[n / 2]) / 2.0;
 }
 
-FrameStat::FrameStat(int64_t site_id, int64_t channel_id, int64_t thread_id)
-    : site_id_(site_id), channel_id_(channel_id), thread_id_(thread_id), fps_(0.0), kbps_(0.0), discont_ps_(0.0),
+FrameStat::FrameStat(int64_t site_id, int32_t channel_id, int32_t stream_type)
+    : site_id_(site_id), channel_id_(channel_id), stream_type_(stream_type), status_(0.0, 0.0, 0.0),
       last_received_ts_(0), last_calc_ts_(0), frame_counter_(0), framebits_counter_(0), discont_counter_(0),
       last_gop_median_(0) {}
 
 FrameStat::~FrameStat() {}
 
-void FrameStat::setStatus(int32_t media_type, int32_t frame_type, int32_t frame_size, int64_t timestamp, bool is_nalu) {
+void FrameStat::setRawData(int32_t frame_size, int64_t frame_ts, int64_t reference_ts, bool is_nalu_or_iframe) {
   frame_counter_++;
   framebits_counter_ += frame_size * 8;
 
-  const int64_t frame_recv_ts =
-      std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now())
-          .time_since_epoch()
-          .count();
   if (last_calc_ts_ == 0) {
-    last_calc_ts_ = frame_recv_ts;
+    last_calc_ts_ = reference_ts;
   }
   if (last_received_ts_ == 0) {
-    last_received_ts_ = frame_recv_ts;
+    last_received_ts_ = reference_ts;
   }
 
-  if (last_gop_median_ > 0 && (frame_recv_ts - last_received_ts_) >= (5 * last_gop_median_)) {
+  if (last_gop_median_ > 0 && (reference_ts - last_received_ts_) >= (5 * last_gop_median_)) {
     discont_counter_++;
   }
 
-  if (is_nalu) {
+  if (is_nalu_or_iframe) {
     last_gop_median_ = !arrival_ts_diffs_.empty() ? median(arrival_ts_diffs_) : 0;
     arrival_ts_diffs_.clear();
-    arrival_ts_diffs_.push_back(frame_recv_ts - last_received_ts_);
+    arrival_ts_diffs_.push_back(reference_ts - last_received_ts_);
   }
 
-  const int64_t time_diff = frame_recv_ts - last_calc_ts_;
+  const int64_t time_diff = reference_ts - last_calc_ts_;
   if (time_diff >= 1000) {
-    fps_  = roundf(static_cast<float>(frame_counter_ * 1000) / static_cast<float>(time_diff) * 100) / 100;
-    kbps_ = roundf(static_cast<float>(framebits_counter_ * 1000 / 1024) / static_cast<float>(time_diff) * 100) / 100;
-    discont_ps_ = roundf(static_cast<float>(discont_counter_ * 1000) / static_cast<float>(time_diff) * 100) / 100;
+    status_.fps        = static_cast<float>(frame_counter_ * 1000) / static_cast<float>(time_diff);
+    status_.kbps       = static_cast<float>(framebits_counter_ * 1000 / 1024) / static_cast<float>(time_diff);
+    status_.discont_ps = static_cast<float>(discont_counter_ * 1000) / static_cast<float>(time_diff);
 
     frame_counter_     = 0;
     framebits_counter_ = 0;
     discont_counter_   = 0;
-    last_calc_ts_      = frame_recv_ts;
+    last_calc_ts_      = reference_ts;
   }
-  last_received_ts_ = frame_recv_ts;
+  last_received_ts_ = reference_ts;
 }
 
-std::tuple<float_t, float_t, float_t> FrameStat::getStatus() { return {fps_, kbps_, discont_ps_}; }
+Status FrameStat::getStatus() { return status_; }
 
 void writeStartEnd(const std::chrono::time_point<std::chrono::system_clock>& start,
                    const std::chrono::time_point<std::chrono::system_clock>& end, const std::string& file_name) {
