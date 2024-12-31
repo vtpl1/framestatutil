@@ -3,7 +3,7 @@
 # *****************************************************
 cmake_minimum_required(VERSION 3.15)
 
-set(VERSION 0.0.1)
+set(VERSION 0.0.2)
 
 project(framestatutil
 	VERSION ${VERSION}
