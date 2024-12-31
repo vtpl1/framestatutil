@@ -14,6 +14,12 @@
 
 namespace vtpl::common {
 
+struct Status {
+  float_t fps;
+  float_t kbps;
+  float_t discont_ps;
+};
+
 class FRAMESTATUTIL_EXPORT FrameStat {
 private:
   int64_t site_id_;
@@ -28,9 +34,10 @@ private:
   std::vector<int64_t> arrival_ts_diffs_;
   int64_t              last_gop_median_;
 
-  float_t fps_;
-  float_t kbps_;
-  float_t discont_ps_;
+  // float_t fps_;
+  // float_t kbps_;
+  // float_t discont_ps_;
+  Status status;
 
   int64_t last_calc_ts_;
 
@@ -38,8 +45,9 @@ public:
   FrameStat(int64_t site_id, int64_t channel_id, int64_t thread_id);
   ~FrameStat();
 
-  void setStatus(int32_t media_type, int32_t frame_type, int32_t frame_size, int64_t timestamp, bool is_nalu);
-  std::tuple<float_t, float_t, float_t> getStatus();
+  void setRawData(int32_t media_type, int32_t frame_type, int32_t frame_size_in_bits, int64_t timestamp,
+                  int64_t referenceTimestamp, bool is_nalu_or_iframe);
+  Status getStatus();
 };
 
 } // namespace vtpl::common
