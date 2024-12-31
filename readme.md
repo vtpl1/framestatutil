@@ -13,8 +13,8 @@ flowchart LR
 ```mermaid
 graph TD
     frame_statistics((Frame Statistics)) === fps((Frames per second))
-    frame_statistics === kbps((kilo bits per second))
-    frame_statistics === discontinuity_ps((Discontinuity Counter per second))
+    frame_statistics === kbps((Kilobits per second))
+    frame_statistics === discontinuity_ps((Discont. counter per second))
     frame_statistics === drop_in_fps((Detect drop in FPS))
-    frame_statistics === drop_in_kbps((Detect drop in kbps))
+    frame_statistics === drop_in_kbps((Detect drop in KBPS))
 ```

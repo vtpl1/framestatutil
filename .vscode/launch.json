@@ -10,7 +10,7 @@
             "request": "launch",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/build/test/tests_framestatutil",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
@@ -32,7 +32,7 @@
             },
             "linux": {
                 "type": "cppdbg",
-                "program": "${workspaceFolder}/build/test/tests",
+                "program": "${workspaceFolder}/build/test/tests_framestatutil",
             }
         }
     ]
