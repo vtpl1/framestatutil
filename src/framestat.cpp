@@ -32,10 +32,10 @@ double median(std::vector<int64_t>& v) {
   return (double)(v[(n - 1) / 2] + v[n / 2]) / 2.0;
 }
 
-FrameStat::FrameStat(int64_t site_id, int32_t channel_id, int32_t stream_type)
+FrameStat::FrameStat(int64_t site_id, int32_t channel_id, int32_t stream_type, bool is_debug_mode)
     : site_id_(site_id), channel_id_(channel_id), stream_type_(stream_type), status_(0.0, 0.0, 0.0),
       last_received_ts_(0), last_calc_ts_(0), frame_counter_(0), framebits_counter_(0), discont_counter_(0),
-      last_gop_median_(0) {}
+      last_gop_median_(0), is_debug_mode_(is_debug_mode) {}
 
 FrameStat::~FrameStat() {}
 
@@ -56,12 +56,14 @@ void FrameStat::setRawData(int32_t frame_size, int64_t frame_ts, int64_t referen
 
   if (is_nalu_or_iframe) {
     last_gop_median_ = !arrival_ts_diffs_.empty() ? median(arrival_ts_diffs_) : 0;
+    std::cout << "last_gop_median_: " << last_gop_median_ << " millis\n";
     arrival_ts_diffs_.clear();
     arrival_ts_diffs_.push_back(reference_ts - last_received_ts_);
   }
 
   const int64_t time_diff = reference_ts - last_calc_ts_;
   if (time_diff >= 1000) {
+    std::cout << "discont_counter_: " << discont_counter_ << "\n";
     status_.fps        = static_cast<float>(frame_counter_ * 1000) / static_cast<float>(time_diff);
     status_.kbps       = static_cast<float>(framebits_counter_ * 1000 / 1024) / static_cast<float>(time_diff);
     status_.discont_ps = static_cast<float>(discont_counter_ * 1000) / static_cast<float>(time_diff);

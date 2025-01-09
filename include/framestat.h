@@ -42,8 +42,10 @@ private:
 
   Status status_;
 
+  bool is_debug_mode_;
+
 public:
-  FrameStat(int64_t site_id, int32_t channel_id, int32_t stream_type);
+  FrameStat(int64_t site_id, int32_t channel_id, int32_t stream_type, bool is_debug_mode = false);
   ~FrameStat();
 
   void   setRawData(int32_t frame_size, int64_t frame_ts, int64_t reference_ts, bool is_nalu_or_iframe);
